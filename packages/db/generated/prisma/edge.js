@@ -186,7 +186,7 @@ const config = {
   },
   "relativeEnvPaths": {
     "rootEnvPath": null,
-    "schemaEnvPath": "../../.env"
+    "schemaEnvPath": "../../../../apps/backend/.env"
   },
   "relativePath": "../../prisma",
   "clientVersion": "6.17.1",
