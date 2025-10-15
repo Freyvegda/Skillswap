@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User{
+  id String @id @default(uuid())
+  email String
+  password String 
+  name String 
+  location String 
+  createdAt DateTime @default(now())
+
+  skillsOffered String[]
+  skillsWanted String[]
+
+  //relations:
+  sessionRequested Session[] @relation("RequestedBy")
+  sessionReceived Session[] @relation("ReceivedBy")
+  reviewGiven Review[] @relation("GivenBy")
+  reviewReceived Review[] @relation("ReceivedBy")
+
+  @@map("users")
+}
+
+model Session{
+  id String @id @default(uuid())
+  requesterId String 
+  receiverId String 
+  skill String 
+  date DateTime
+  duration Int @default(60)
+  status String @default("pending")
+  notes String?
+  createdAt DateTime @default(now())
+
+  //relations:
+  requester User @relation("RequestedBy", fields: [requesterId], references: [id], onDelete: Cascade)
+  received User @relation("ReceivedBy", fields: [receiverId], references: [id], onDelete: Cascade)
+  review Review[]
+
+  @@map("sessions")
+}
+
+model Review{
+  id String @id @default(uuid())
+  sessionId String 
+  fromId String 
+  toId String 
+  rating Int 
+  comment String?
+  createdAt DateTime @default(now())
+
+  //relations:
+  from User @relation("GivenBy", fields: [fromId], references: [id], onDelete: Cascade )
+  to User @relation("ReceivedBy", fields: [toId], references: [id], onDelete: Cascade )
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, fromId])
+  @@map("reviews")
+}
+
+
+
+enum SkillLevel{
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED 
+  EXPERT
+}
+
+enum SkillType{
+  OFFERED 
+  WANTED
+}
