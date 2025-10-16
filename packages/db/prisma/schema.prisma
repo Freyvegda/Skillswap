@@ -29,8 +29,8 @@ model User{
   //relations:
   sessionRequested Session[] @relation("RequestedBy")
   sessionReceived Session[] @relation("ReceivedBy")
-  reviewGiven Review[] @relation("GivenBy")
-  reviewReceived Review[] @relation("ReceivedBy")
+  reviewsGiven Review[] @relation("GivenBy")
+  reviewsReceived Review[] @relation("ReceivedBy")
 
   @@map("users")
 }

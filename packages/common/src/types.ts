@@ -56,6 +56,12 @@ export const updateSessionStatusSchema = z.object({
   status: z.enum(['pending', 'confirmed', 'completed', 'cancelled']),
 });
 
+export const getSessionsQuerySchema = z.object({
+  status: z.enum(['pending', 'confirmed', 'completed', 'cancelled']).optional(),
+  page: z.string().regex(/^\d+$/).transform(Number).optional().default('1'),
+  limit: z.string().regex(/^\d+$/).transform(Number).optional().default('10'),
+});
+
 
 //types:
 export type RegisterInput = z.infer<typeof registerSchema>
@@ -68,9 +74,28 @@ export type CreateSessionInput = z.infer<typeof createSessionSchema>;
 export type UpdateSessionInput = z.infer<typeof updateSessionSchema>;
 export type GetSessionByIdInput = z.infer<typeof getSessionByIdSchema>;
 export type UpdateSessionStatusInput = z.infer<typeof updateSessionStatusSchema>;
+export type GetSessionsQueryInput = z.infer<typeof getSessionsQuerySchema>;
 
 export interface JWTPayload {
   userId: string;
   email: string;
   iat?: number;
+}
+
+export interface ApiResponse<T= any>{
+  success: boolean;
+  msg: string;
+  data?: T;
+  err?: string;
+}
+
+export interface Pagination<T>{
+  success: boolean;
+  data :T[];
+  pagination:{
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number
+  }
 }
