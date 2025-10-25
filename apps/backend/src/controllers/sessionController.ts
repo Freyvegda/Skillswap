@@ -223,42 +223,214 @@ export const getSessionById = async (req: Request, res: Response): Promise<void>
 }
 
 
-export const updateSessionStatus =async (req: Request, res: Response): Promise<void> =>{
-    const userId = req.user?.userId;
-    const {id} = getSessionByIdSchema.parse({id: req.params.id});
-    const status = updateSessionSchema.parse(req.body);
-    
-    const session = prisma.session.findUnique({
-        where:{
-            id
-        },
-    })
-    
-    if(!session){
-        res.status(404).json({
-            success: false,
-            msg: 'Session not found'
+//update session: PUT /api/session/:id
+export const updateSession =async (req: Request, res: Response): Promise<void> =>{
+    try{
+        const userId = req.user?.userId;
+        const {id} = getSessionByIdSchema.parse({id: req.params.id});
+        const validatedData: UpdateSessionInput = updateSessionSchema.parse(req.body);
+        
+        const session = prisma.session.findUnique({
+            where:{
+                id
+            },
         })
-        return 
-    }
+        
+        if(!session){
+            res.status(404).json({
+                success: false,
+                msg: 'Session not found'
+            })
+            return 
+        }
     
-    // Only receiver can confirm, both can cancel
-    if(status === 'confirmed' && session.receiverId !== userId){
-        res.status(401).json({
-            success: false,
-            msg: 'Only reciever can confirm the session'
-        })
-        return
-    }
-    
-    if (session.requesterId !== userId && session.receiverId !== userId) {
-      res.status(403).json({
-            success: false,
-            message: 'Access denied',
-      });
-      return;
-    }
-    
-    const 
+        if(session.requesterId !== userId){
+            res.status(403).json({
+                success: false,
+                msg: 'Only the session requester can update the session'
+            })
+            return
+        }
 
+        const updateData: any = {};
+        if (validatedData.date) updateData.date = new Date(validatedData.date);
+        if (validatedData.duration) updateData.duration = validatedData.duration;
+        if (validatedData.status) updateData.status = validatedData.status;
+        if (validatedData.notes !== undefined) updateData.notes = validatedData.notes;
+
+        const updatedSession =  await prisma.session.update({
+            where:{
+                id
+            },
+            data: updateData,
+            include:{
+                receiver:{
+                    select:{
+                        id: true,
+                        name: true
+                    }
+                },
+                requester:{
+                    select:{
+                        id: true,
+                        name: true
+                    }
+                }
+            }
+        })
+
+        res.status(200).json({
+            success:true,
+            msg: "session updated successfully",
+            data: updatedSession
+        })
+    }
+    catch(err: any){
+        if (err.name === 'ZodError') {
+            res.status(400).json({
+                success: false,
+                message: 'Validation error',
+                errors: err.errors,
+            });
+            return;
+        }
+
+        console.error('Get sessions error:', err);
+            res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+        });
+    }
+}
+
+
+//update session status(confirm/cancel): PATCH /api/session/:id/status
+export const updateSessionStatus = async (req: Request, res: Response): Promise<void> => {
+    try{
+        const userId = req.user?.userId;
+        const {id} = getSessionByIdSchema.parse({id: req.params.id})
+        const status  = updateSessionStatusSchema.parse(req.body);
+
+        const session =  await prisma.session.findUnique({
+            where:{id}
+        })
+
+        if(!session){
+            res.status(404).json({
+                success: false,
+                msg: 'Session not found'
+            })
+            return
+        }
+
+        if (session.status === "confirmed" && session.receiverId !== userId) {
+        res.status(403).json({
+                success: false,
+                msg: 'Only the receiver can confirm the session',
+            });
+            return;
+        }
+
+        if(session.requesterId!== userId && session.receiverId !== userId){
+            res.status(403).json({
+                success: false,
+                msg: "Access denied"
+            })
+        }
+
+        const updatedSession = await prisma.session.update({
+            where: {id},
+            data: {status},
+            include:{
+                receiver:{
+                    select:{
+                        id: true,
+                        name: true
+                    }
+                },
+                requester:{
+                    select:{
+                        name: true,
+                        id: true
+                    }
+                }
+            },
+        })
+
+        res.status(200).json({
+            success: true,
+            message: `Session ${status} successfully`,
+            data: updatedSession,
+        });
+    }
+
+    catch(err: any){
+        if (err.name === 'ZodError') {
+            res.status(400).json({
+                success: false,
+                message: 'Validation error',
+                errors: err.errors,
+            });
+            return;
+        }
+
+        console.error('Get sessions error:', err);
+            res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+        });
+    }
+}
+
+
+export const deleteSession = async (req: Request, res: Response): Promise<void> => {
+    try{
+
+        const {id} = getSessionByIdSchema.parse({id: req.params.id})
+        const userId = req.user?.userId
+    
+        const session = await prisma.session.findUnique({
+            where:{id}
+        })
+    
+        if(!session){
+            res.status(404).json({
+                success: false,
+                msg: "Session not found"
+            })
+        }
+    
+        if(session.requesterId !== userId){
+            res.status(403).json({
+                success: false,
+                msg: "Only requester can delete the session"
+            })
+        }
+    
+        const deleteSession = await prisma.session.delete({
+            where:{id}
+        })
+    
+        res.status(200).json({
+            success: true,
+            msg: "Session deleted successfully"
+        })
+    }
+
+    catch(err: any){
+        if (err.name === 'ZodError') {
+            res.status(400).json({
+                success: false,
+                message: 'Validation error',
+                errors: err.errors,
+            });
+            return;
+        }
+
+        console.error('Get sessions error:', err);
+            res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+        });
+    }
 }
