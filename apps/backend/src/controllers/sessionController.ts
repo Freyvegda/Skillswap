@@ -383,6 +383,7 @@ export const updateSessionStatus = async (req: Request, res: Response): Promise<
 }
 
 
+//Delete session: DELETE /api/session/:id
 export const deleteSession = async (req: Request, res: Response): Promise<void> => {
     try{
 
