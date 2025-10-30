@@ -29,10 +29,10 @@ const AuthPage = () =>{
     const router = useRouter();
 
     const [formData, setFormData] = useState<AuthFormData>({
-        name: " ",
-        email: " ",
-        password: " ",
-        location: " ",
+        name: "",
+        email: "",
+        password: "",
+        location: "",
         skillsOffered: [],
         skillsWanted: []
     })
@@ -183,7 +183,7 @@ const AuthPage = () =>{
                                         value={formData.location}
                                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                         className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
-                                        placeholder="San Francisco, CA"
+                                        placeholder="Mumbai"
                                     />
                                     </div>
                                 </div>
@@ -247,7 +247,7 @@ const AuthPage = () =>{
                                 <label className="block text-sm font-medium text-gray-700 mb-3">
                                 Skills You Can Teach
                                 </label>
-                                <p className="text-xs text-gray-500 mb-3">Select skills you're confident teaching</p>
+                                <p className="text-xs text-gray-500 mb-3">Select skills you&apos;re confident teaching</p>
                                 <div className="grid grid-cols-4 gap-3">
                                 {skills.map((skill) => {
                                     const Icon = skill.icon;
@@ -276,7 +276,7 @@ const AuthPage = () =>{
                                 <label className="block text-sm font-medium text-gray-700 mb-3">
                                 Skills You Want to Learn
                                 </label>
-                                <p className="text-xs text-gray-500 mb-3">Select skills you're interested in learning</p>
+                                <p className="text-xs text-gray-500 mb-3">Select skills you&apos;re interested in learning</p>
                                 <div className="grid grid-cols-4 gap-3">
                                     {skills.map((skill) => {
                                         const Icon = skill.icon;

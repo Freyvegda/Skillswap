@@ -8,7 +8,7 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="backdrop-blur-md bg-teal-50/70 border-b border-gray-200 sticky top-0 z-50 transition-all duration-300">
+    <nav className="backdrop-blur-md bg-cyan-50/70 border-b border-gray-200 sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -23,13 +23,13 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             <Link
               href="#how-it-works"
-              className="text-gray-600 hover:text-gray-900 transition"
+              className="font-semibold text-gray-600 hover:text-gray-900 transition"
             >
               How it Works
             </Link>
             <Link
               href="#browse-skills"
-              className="text-gray-600 hover:text-gray-900 transition"
+              className="font-semibold text-gray-600 hover:text-gray-900 transition"
             >
               Browse Skills
             </Link>
