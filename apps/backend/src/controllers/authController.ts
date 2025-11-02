@@ -3,6 +3,7 @@ import bcrypt from  "bcrypt"
 import prisma from "@repo/db"
 import { generateToken } from "../middleware/auth.js";
 import { registerSchema, loginSchema, type RegisterInput, type LoginInput,  } from "@repo/common/types";
+import { updateSkillsCount } from '../controllers/redisController.js';
 
 
 export const register = async (req: Request, res: Response): Promise<void> =>{
@@ -47,6 +48,8 @@ export const register = async (req: Request, res: Response): Promise<void> =>{
             userId: user.id,
             email: user.email
         })
+
+        await updateSkillsCount(validatedData.skillsOffered, 'add');
 
         res.status(201).json({
             success: true,
