@@ -1,6 +1,7 @@
 import Navbar from "../components/Navbar";
 import HeroSection from "../components/landing_page/HeroSection";
 import HowItWorks from "../components/landing_page/HowItWorks";
+import { PopularSkills } from "../components/landing_page/PopularSkills";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <Navbar/>
       <HeroSection/>
       <HowItWorks/>
+      <PopularSkills/>
     </div>
   );
 }
